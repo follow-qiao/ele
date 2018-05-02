@@ -1,0 +1,69 @@
+/*设备像素比*/
+@media only screen and (-webkit-min-device-pixel-ratio: 2.0), only screen and (min-resolution: 2dppx) {
+  .border-bottom-1px{
+    &::after{
+      transform: scaleY(0.5);
+    }
+  }
+  .border-top-1px{
+     &::after {
+      transform: scaleY(0.5);
+    }
+  }
+  .border-left-1px{
+    &::after{
+      transform: scaleX(0.5);
+    }
+  }
+  .border-right-1px{
+    &::after{
+      transform: scaleX(0.5);
+    }
+  }
+ .border-1px{
+   &::after {
+    width: 200%;
+    height: 200%;
+    transform: scale(0.5);
+    transform-origin: 0 0;
+  }
+ }
+
+}
+
+/*设备像素比*/
+@media only screen and (-webkit-min-device-pixel-ratio: 3.0), only screen and (min-resolution: 3dppx) {
+ .border-bottom-1px{
+  &::after{
+    transform: scaleY(0.333);
+  }
+ }
+ .border-top-1px{
+  &::after {
+    transform: scaleY(0.333);
+  }
+ }
+
+ .border-left-1px{
+  &::after{
+    transform: scaleX(0.333);
+  }
+ }
+ .border-right-1px{
+  &::after {
+    transform: scaleX(0.333);
+  }
+ }
+.border-1px{
+  &::after {
+    width: 300%;
+    height: 300%;
+    transform: scale(0.333);
+    transform-origin: 0 0;
+  }
+}
+
+}
+
+
+
