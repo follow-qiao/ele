@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <Header :seller="seller"></Header>
     <div class="banner-tap border-bottom-1px">
       <router-link to="/goods">商品</router-link>
       <router-link to="/evaluate">评价</router-link>
@@ -12,8 +12,30 @@
 
 <script type="text/ecmascript-6">
 import Header from "components/header/header.vue";
+const ERR_OK=0;
 export default {
   name: "App",
+  created(){
+    console.log(this)
+    this.$http.get('/api/seller', {
+      params: {}
+    })
+    .then((response) => {
+      let dataList=response.data
+      if(ERR_OK===dataList.erro) {
+        this.seller=dataList.data;
+        console.log(this.seller)
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  },
+  data(){
+    return {
+      seller:null
+    }
+  },
   components: {
     Header
   }

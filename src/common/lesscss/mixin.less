@@ -3,6 +3,9 @@
   display: block;
   clear:both;
 }
+.bg-image(@url){
+  background-image: ~"url(@{url}@2x.png)"
+}
 .border-none{
   &:after{
     display: none

@@ -9,11 +9,11 @@ module.exports = {
     "postcss-pxtorem": {
         rootValue: 75,
         unitPrecision: 5,
-        propList: ['*','!border'],
-        selectorBlackList: ['border'],
+        propList: ['*',],
+        selectorBlackList: ['border','flex-width',"goods-list","font-weight"],
         replace: true,
         mediaQuery: false,
-        minPixelValue: 1
+        minPixelValue: 2
     }
   }
 }

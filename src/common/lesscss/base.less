@@ -1,5 +1,6 @@
 /*设备像素比*/
 @media only screen and (-webkit-min-device-pixel-ratio: 2.0), only screen and (min-resolution: 2dppx) {
+
   .border-bottom-1px{
     &::after{
       transform: scaleY(0.5);
@@ -33,7 +34,10 @@
 
 /*设备像素比*/
 @media only screen and (-webkit-min-device-pixel-ratio: 3.0), only screen and (min-resolution: 3dppx) {
- .border-bottom-1px{
+  .bg-image(@url){
+    background-image: ~"url(@{url}@3x.png)"
+  }
+  .border-bottom-1px{
   &::after{
     transform: scaleY(0.333);
   }

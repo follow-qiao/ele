@@ -1,43 +1,43 @@
 <template>
   <div class="goods">
     <ul class="goods-list">
-      <li>
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>热销榜</span>
         </div>
       </li>
-      <li class="active">
+      <li class="flex-width active">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
         </div>
       </li>
-      <li >
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
         </div>
       </li>
-      <li >
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
         </div>
       </li>
-      <li >
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
         </div>
       </li>
-      <li >
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
         </div>
       </li>
-      <li >
+      <li class="flex-width">
         <div class="border-bottom-1px clearfix list-item">
           <i></i>
           <span>单人特色套餐</span>
@@ -139,29 +139,35 @@
 @import "../../common/lesscss/mixin.less";
 .goods{
   display: flex;
+  position: absolute;
+  top:354px;
+  left:0;
+  width:100%;
   .goods-list{
     box-sizing: border-box;
-    width: 160px;
+    width: 80px;
     .border-bottom-1px{
       .border-bottom-1px(rgba(7, 17, 27, 0.1))
     }
-    li{
+    .flex-width{
       box-sizing: border-box;
-      padding: 0 24px;
+      // width: 80px;
+      padding: 0 12px;
       background-color: #f3f5f7;
       .list-item{
         display: flex;
+        width:56px;
         align-items: center;
-         height:108px;
+        height:54px;
         i{
           float: left;
         }
         span{
           float: left;
-          font-size: 24px;
+          font-size: 12px;
           color: rgb(7, 17, 27);
           font-weight: 200;
-          line-height: 28px;
+          line-height: 14px;
         }
       }
     }
