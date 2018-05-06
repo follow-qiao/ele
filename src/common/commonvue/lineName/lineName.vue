@@ -22,7 +22,7 @@
 </script>
 
 <style lang='less' scoped type='text/css'>
-@import "../lesscss/mixin.less";
+@import "../../lesscss/mixin.less";
 .line-wrap{
   display: flex;
   align-items: center;

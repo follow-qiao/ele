@@ -32,17 +32,22 @@
         <div class="stick-wraper clearfix">
           <div class="stick-contain">
             <h3 class="mask-name">{{seller.name}}</h3>
-            <div class="star">
-              <i></i>
+            <div  class="star">
+              <Star :size="48" :store="seller.foodScore"></Star>
             </div>
             <div class="discount-wrap">
               <LineName :lineName="discountName"></LineName>
+              <ul class="active-wrap">
+                <li v-for="(item, index) in seller.supports" :key="index">
+                  <i class="active-icon" :class="classList[index]"></i>
+                  <span class="active-info">{{item.description}}</span>
+                </li>
+              </ul>
             </div>
             <div class="seller-tip">
               <LineName :lineName="tipName"></LineName>
-              <p>
-
-              </p>
+              <p class="des-tip">无奈相思，一卷红尘，是谁的挂牵，人生的无缘，一个错过，一个生死不见，爱梦断，人回首，只是江湖冷三生，岁月无情。
+                一杯老酒，一段人生，沧海无奈，思念自己的孤独，伤害最后的生命。一段思念，一段无缘，守望人海的冷，憔悴自己的辜负。</p>
             </div>
           </div>
         </div>
@@ -54,7 +59,8 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import LineName from "common/commonvue/lineName.vue"
+import LineName from "common/commonvue/lineName/lineName.vue"
+import Star from "common/commonvue/star/star.vue"
 export default {
   name: "header",
   props:{
@@ -63,7 +69,8 @@ export default {
     }
   },
   components:{
-    LineName
+    LineName,
+    Star
   },
   created(){
     this.classList=['decrease','discount','guarantee','invoice','special']
@@ -240,6 +247,65 @@ export default {
             line-height: 32px;
             text-align: center;
           }
+          .star{
+              height:136px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+          }
+          .active-wrap{
+            width:80%;
+            margin: 0 auto;
+            padding: 48px 0 56px 0;
+            li{
+              margin-bottom:24px;
+              .active-icon{
+                display: inline-block;
+                vertical-align: middle;
+                width: 32px;
+                height: 32px;
+                background-size: 32px 32px;
+                &.decrease{
+                  .bg-image('decrease_2')
+                }
+                &.discount{
+                  .bg-image('discount_2')
+                }
+                &.guarantee{
+                  .bg-image('guarantee_2')
+                }
+                &.invoice{
+                  .bg-image('invoice_2')
+                }
+                &.special{
+                  .bg-image('special_2')
+                }
+              }
+              .active-info{
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 24px;
+                font-weight: 200;
+                color: rgb(255, 255, 255);
+                line-height: 24px;
+                text-indent: 12px;
+              }
+            }
+            &>li:last-child{
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+      .seller-tip{
+        .des-tip{
+          width:80%;
+          margin:48px auto 0;
+          padding:0 24px;
+          font-size: 24px;
+          font-weight: 200;
+          color:rgb(255, 255, 255);
+          line-height: 48px;
         }
       }
       .close{
