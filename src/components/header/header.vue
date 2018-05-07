@@ -13,7 +13,7 @@
             <div class="activity clearfix">
                 <span class="icon" :class="classList[seller.supports[0].type]"></span>
                 <span class="active-desc">{{seller.supports[0].description}}</span>
-                <span class="more-active">
+                <span class="more-active" @click="showTip">
                   <span class="active-num">{{seller.supports.length}}个</span>
                   <span class="icon-keyboard_arrow_right"></span>
                 </span>
@@ -28,33 +28,36 @@
         <span class="notice-desc">{{seller.bulletin}}</span>
         <span class="enter-notice icon-keyboard_arrow_right"></span>
       </div>
-      <div class="mask">
-        <div class="stick-wraper clearfix">
-          <div class="stick-contain">
-            <h3 class="mask-name">{{seller.name}}</h3>
-            <div  class="star">
-              <Star :size="48" :store="seller.foodScore"></Star>
-            </div>
-            <div class="discount-wrap">
-              <LineName :lineName="discountName"></LineName>
-              <ul class="active-wrap">
-                <li v-for="(item, index) in seller.supports" :key="index">
-                  <i class="active-icon" :class="classList[index]"></i>
-                  <span class="active-info">{{item.description}}</span>
-                </li>
-              </ul>
-            </div>
-            <div class="seller-tip">
-              <LineName :lineName="tipName"></LineName>
-              <p class="des-tip">无奈相思，一卷红尘，是谁的挂牵，人生的无缘，一个错过，一个生死不见，爱梦断，人回首，只是江湖冷三生，岁月无情。
-                一杯老酒，一段人生，沧海无奈，思念自己的孤独，伤害最后的生命。一段思念，一段无缘，守望人海的冷，憔悴自己的辜负。</p>
+      <transition name="slide">
+        <div class="mask" v-show="isShow">
+          <div class="stick-wraper clearfix">
+            <div class="stick-contain">
+              <h3 class="mask-name">{{seller.name}}</h3>
+              <div  class="star">
+                <Star :size="48" :store="seller.foodScore"></Star>
+              </div>
+              <div class="discount-wrap">
+                <LineName :lineName="discountName"></LineName>
+                <ul class="active-wrap">
+                  <li v-for="(item, index) in seller.supports" :key="index">
+                    <i class="active-icon" :class="classList[index]"></i>
+                    <span class="active-info">{{item.description}}</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="seller-tip">
+                <LineName :lineName="tipName"></LineName>
+                <p class="des-tip">无奈相思，一卷红尘，是谁的挂牵，人生的无缘，一个错过，一个生死不见，爱梦断，人回首，只是江湖冷三生，岁月无情。
+                  一杯老酒，一段人生，沧海无奈，思念自己的孤独，伤害最后的生命。一段思念，一段无缘，守望人海的冷，憔悴自己的辜负。</p>
+              </div>
             </div>
           </div>
+          <div class="close">
+            <i class="icon-close" @click="closeTip"></i>
+          </div>
         </div>
-        <div class="close">
-          <i class="icon-close"></i>
-        </div>
-      </div>
+      </transition>
+
 
   </div>
 </template>
@@ -78,7 +81,16 @@ export default {
   data(){
     return {
       discountName:"商家公告",
-      tipName:"优惠信息"
+      tipName:"优惠信息",
+      isShow:false
+    }
+  },
+  methods:{
+    showTip(){
+      this.isShow=true
+    },
+    closeTip(){
+      this.isShow=false
     }
   }
 };
@@ -224,6 +236,15 @@ export default {
        color: rgb(255, 255, 255)
      }
    }
+   .slide-enter-active {
+      transition: all .6s ease;
+    }
+    .slide-leave-active {
+      transition: all .4s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    }
+    .slide-enter, .slide-leave-to {
+      opacity: 0;
+    }
     .mask{
       position: fixed;
       z-index: 99;
@@ -232,6 +253,7 @@ export default {
       width:100%;
       height:100%;
       background-color: rgba(7, 17, 27, 0.8);
+      overflow:auto;
       .stick-wraper{
         width:100%;
         min-height:100%;
