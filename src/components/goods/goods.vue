@@ -1,5 +1,5 @@
 <template>
-  <div class="goods"> {{selecedIndex}}
+  <div class="goods">
     <div ref="menuWrap">
       <ul class="goods-list">
         <li class="flex-width" v-for="(item,index) in goods" :key="index" :class="{'active':selecedIndex===index}" @click="scrollFood(index)">
@@ -13,7 +13,7 @@
     <div ref="foodsWrap">
       <ul class="goods-info">
         <li class="type-item" v-for="(item,index) in goods" :key="index">
-          <h3 class="type-name">{{item.name}}}</h3>
+          <h3 class="type-name">{{item.name}}</h3>
           <ul class="item-wrap">
             <li class="type-info" v-for="(food,index) in item.foods" :key="index">
               <div class="food-pic">
@@ -27,20 +27,25 @@
                   <span>好评率{{food.rating}}%</span>
                 </div>
                 <div class="sale-price">
-                  <span class="price">￥{{food.price}}</span>
-                  <span class="origin-price" v-if="food.oldPrice">{{'￥'+food.oldPrice}}</span>
+                  <div>
+                    <span class="price">￥{{food.price}}</span>
+                    <span class="origin-price" v-if="food.oldPrice">{{'￥'+food.oldPrice}}</span>
+                  </div>
+                  <Cartcontrol class="add-num" :food="food"></Cartcontrol>
                 </div>
-                <div class="add-num">+</div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <Shopcart v-if="seller" :deliveryPrice="(seller.deliveryPrice)*1" :minPrice="seller.minPrice" :selectFoods="selectFoods"></Shopcart>
   </div>
 </template>
 <script type='text/ecmascript-6'>
   import BScroll from "better-scroll";
+  import Shopcart from "components/shopcart/shopcart.vue";
+  import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
   let ERR_OK=0
   export default {
     created(){
@@ -51,6 +56,7 @@
         let dataList=response.data
         if(ERR_OK===dataList.erro) {
           this.goods=dataList.data;
+          console.log(this.goods)
           this.$nextTick(() => {
             this._initFun()
             this._calculate()
@@ -63,12 +69,22 @@
       });
       this.classList=['decrease','discount','guarantee','invoice','special']
     },
+    props:{
+      seller:{
+        type:Object,
+        default:null
+      }
+    },
     data () {
       return {
         goods:[],
         clientHeights:[],  //区间高度数组
         scrollY:0
       }
+    },
+    components:{
+      Shopcart,
+      Cartcontrol
     },
     computed:{
       selecedIndex:function (){
@@ -80,6 +96,17 @@
           }
         }
         return 0
+      },
+      selectFoods(){
+        let selectFood=[]
+        this.goods.forEach((foods) => {
+          foods.foods.forEach((food) => {
+            if(food.count){
+              selectFood.push(food)
+            }
+          })
+        })
+        return selectFood
       }
     },
     methods:{
@@ -88,6 +115,7 @@
           click:true
         })
         this.foodsScroll=new BScroll(this.$refs.foodsWrap,{
+          click:true,
           probeType:3
         })
       },
@@ -119,19 +147,19 @@
   display: flex;
   position: absolute;
   top:354px;
-  bottom:116px;
+  bottom:90px;
   left:0;
   width:100%;
   overflow:hidden;
   .goods-list{
     box-sizing: border-box;
     width: 80px;
+    padding-bottom: 20px;
     .border-bottom-1px{
       .border-bottom-1px(rgba(7, 17, 27, 0.1))
     }
     .flex-width{
       box-sizing: border-box;
-      // width: 80px;
       padding: 0 12px;
       background-color: #f3f5f7;
       .list-item{
@@ -237,6 +265,9 @@
             }
           }
           .sale-price{
+            display:flex;
+            align-items: center;
+            justify-content: space-between;
             .price{
               font-size: 28px;
               color:rgb(240, 20, 20);
@@ -253,18 +284,11 @@
                 bottom:12px;
               }
             }
+            .add-num{
+              height: 40px;
+            }
           }
-          .add-num{
-            position:absolute;
-            bottom:4px;
-            right:4px;
-            width: 40px;
-            height: 40px;
-            background-color: rgb(0, 160, 220);
-            color:rgb(255, 255, 255);
-            text-align: center;
-            line-height: 40px;
-          }
+
         }
       }
       &>li:last-child{

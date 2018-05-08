@@ -6,7 +6,7 @@
       <router-link to="/evaluate">评价</router-link>
       <router-link to="/business">商家</router-link>
     </div>
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 
