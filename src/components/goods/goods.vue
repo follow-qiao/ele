@@ -31,7 +31,7 @@
                     <span class="price">￥{{food.price}}</span>
                     <span class="origin-price" v-if="food.oldPrice">{{'￥'+food.oldPrice}}</span>
                   </div>
-                  <Cartcontrol class="add-num" :food="food"></Cartcontrol>
+                  <Cartcontrol class="add-num" :food="food" @adddom="addDom"></Cartcontrol>
                 </div>
               </div>
             </li>
@@ -39,7 +39,7 @@
         </li>
       </ul>
     </div>
-    <Shopcart v-if="seller" :deliveryPrice="(seller.deliveryPrice)*1" :minPrice="seller.minPrice" :selectFoods="selectFoods"></Shopcart>
+    <Shopcart v-if="seller" :deliveryPrice="(seller.deliveryPrice)*1" :minPrice="seller.minPrice" :selectFoods="selectFoods" ref="carDom"></Shopcart>
   </div>
 </template>
 <script type='text/ecmascript-6'>
@@ -136,6 +136,12 @@
         console.log(index)
         // this.selecedIndex=index;
         this.foodsScroll.scrollTo(0, -this.clientHeights[index], 500)
+      },
+      addDom(el){
+        //优化动画效果，先让添加商品动画执行，在异步执行小球掉落动画；
+        this.$nextTick(() => {
+          this.$refs.carDom._dropDown(el)
+        })
       }
     }
   }

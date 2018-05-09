@@ -12,10 +12,36 @@
     <div class="shop-right" :class="{'Settlement':payDes=='去结算'}">
       <span>{{payDes}}</span>
     </div>
+    <div class="box-wrap">
+      <transition-group  name="drop"
+      v-on:before-enter="beforeEnter"
+      v-on:enter="enter"
+      v-on:after-enter="afterEnter" >
+        <div class="box" v-for="(item,index) in balls" :key="index" v-show="item.show">
+          <div class="boxinner"></div>
+        </div>
+      </transition-group>
+    </div>
+    <div class="select-list" >
+      <div class="list-header">
+        <h3 class="list-name">购物车</h3>
+        <span class="empty">清空</span>
+      </div>
+      <ul class="food-list">
+        <li class="item">
+          <div class="food-name">三大范大师教你付</div>
+          <div class="single-price">${{10}}</div>
+          <div class="cart-control">
+            <!-- <Cartcontrol class="add-num"></Cartcontrol> -->
+          </div>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script type='text/ecmascript-6'>
+import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
   export default {
     props:{
       seller:{
@@ -44,6 +70,14 @@
     },
     data () {
       return {
+        balls:[
+          {show:false},
+          {show:false},
+          {show:false},
+          {show:false},
+          {show:false}
+        ],
+        selecballs:[]
       }
     },
     computed:{
@@ -71,6 +105,56 @@
           return '去结算'
         }
       }
+    },
+    methods:{
+      _dropDown(el){
+        for(let i=0;i<this.balls.length;i++){
+          let ball=this.balls[i]
+          if(!ball.show){
+            ball.show=true;
+            ball.el=el;
+            this.selecballs.push(ball);
+            return;
+          }
+        }
+
+      },
+      beforeEnter: function (el) {
+        let len=this.balls.length;
+        while(len--){
+          let ball=this.balls[len];
+          if(ball.show){
+            let rect=ball.el.getBoundingClientRect();
+            let dx=rect.left-62;
+            let dy=-(window.innerHeight-rect.top-46)
+            el.style.transform=`translate3d(0, ${dy}px, 0)`;
+            let inner=el.getElementsByClassName('boxinner')[0]
+            inner.style.transform=`translate3d(${dx}px, 0, 0)`;
+          }
+        }
+
+        // ...
+      },
+      // 此回调函数是可选项的设置
+      // 与 CSS 结合时使用
+      enter: function (el) {
+       let rf=el.offsetHeight
+       this.$nextTick(() => {
+          el.style.transform='translate3d(0, 0, 0)';
+          let inner=el.getElementsByClassName('boxinner')[0]
+          inner.style.transform='translate3d(0, 0, 0)';
+       })
+      },
+      afterEnter: function (el) {
+        let ball=this.selecballs.shift()
+        if(ball){
+          ball.show=false;
+          el.style.display="";
+        }
+      }
+    },
+    components:{
+      Cartcontrol
     }
   }
 </script>
@@ -130,7 +214,7 @@
         font-weight:700;
         line-height:32px;
         color:rgb(255, 255, 255);
-        border-radius:12px;
+        border-radius:24px;
         box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.4);
         background-color: rgb(240, 20, 20)
       }
@@ -167,6 +251,82 @@
       font-size:30px;
       line-height:32px;
       font-weight:700;
+    }
+  }
+  .box-wrap{
+    position:fixed;
+    left: 62px;
+    bottom: 46px;
+    width: 32px;
+    height: 32px;
+    z-index: 99;
+    .drop-enter-active{
+      transition: all 0.3s cubic-bezier(.23,-0.2,.57,.25);
+      .boxinner{
+        transition: all 0.3s;
+      }
+    }
+    .box{
+      .boxinner{
+        width:32px;
+        height:32px;
+        border-radius:50%;
+        background-color:rgb(0, 160, 220);
+      }
+    }
+  }
+  .select-list{
+    position:absolute;
+    top:-611px;
+    left:0;
+    width:100%;
+    height:611px;
+    background-color:#fff;
+    z-index: -1;
+    .list-header{
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height:80px;
+      padding:0 36px;
+      background-color: #f3f5f7;
+      .border-bottom-1px(rgba(7, 17, 27, 0.1));
+      .list-name{
+        font-size: 28px;
+        font-weight: 200;
+        color:rgb(7, 17, 27);
+      }
+      .empty{
+        font-size: 24px;
+        color:rgb(0, 160, 220)
+      }
+    }
+    .food-list{
+      padding: 0 36px;
+      .item{
+        display: flex;
+        height:96px;
+        align-items: center;
+        box-sizing: border-box;
+        .border-bottom-1px(rgba(7, 17, 27, 0.1));
+        .food-name{
+          width:458px;
+          font-size: 28px;
+          color: rgb(7, 17, 27);
+          line-height:48px
+        }
+        .single-price{
+          font-size:28px;
+          font-weight:700;
+          color:rgb(240, 20, 20);
+          line-height:48px;
+          margin-right:36px;
+        }
+        .cart-control{
+
+        }
+      }
     }
   }
 }

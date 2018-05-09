@@ -6,7 +6,7 @@
       </div>
     </transition>
     <span class="num" v-show="food.count">{{food.count}}</span>
-    <i class="add icon-add_circle" @click="addFoodNum"></i>
+    <i class="add icon-add_circle" @click="addFoodNum($event)"></i>
   </div>
 </template>
 
@@ -24,17 +24,20 @@
       }
     },
     methods:{
-      addFoodNum(){
+      addFoodNum(event){
         if(!this.food.count){
           Vue.set(this.food,'count')
           this.food.count=1;
         }else{
           this.food.count++;
         }
-        console.log(this.food)
+        console.log(event.target)
+        this.$emit('adddom',event.target)
       },
       reduceNum(){
-        this.food.count--;
+        if(this.food.count>0){
+          this.food.count--;
+        }
       }
     }
   }
@@ -45,35 +48,32 @@
 .cart-control{
   font-size: 0;
   line-height:48px;
-  .fade-enter-active{
-    transition: all 12s ease;
-    // i{
-    //   transition: all 1s;
-    // }
+  .num-mode-enter-active{
+    transition: all 0.3s ease;
+    i{
+      transition: all 0.3s linear;
+    }
   }
-  .fade-leave-active{
-    transition: all 12s ease;
-    // i{
-    //   transition: all 1s;
-    // }
-  }
-  .num-mode-enter{
-    opacity: 0;
-    transform:translate3D(40px,0,0);
-    // i{
-    //   transform:rorate(180deg);
-    // }
+  .num-mode-leave-active{
+    transition: all 0.3s ease;
+    i{
+      transition: all 0.3s linear;
+    }
   }
   .num-mode-enter{
     opacity: 0;
-    transform:translate3D(40px,0,0);
-    // i{
-    //   transform:rorate(180deg);
-    // }
+    transform:translate3d(40px,0,0);
+    i{
+      transform:rorate(180deg);
+    }
   }
-  // .fade-leave-active{
-  //   transition: opacity .5s;
-  // }
+  .num-mode-leave-to{
+    opacity: 0;
+    transform:translate3d(40px,0,0);
+    i{
+      transform:rorate(180deg);
+    }
+  }
   .reduce{
     display: inline-block;
     i{
@@ -94,7 +94,7 @@
   }
   .add{
     display: inline-block;
-    font-size:48px;
+    font-size: 48px;
     color: rgb(0, 160, 220);
     padding:4px;
   }
