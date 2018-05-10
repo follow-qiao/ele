@@ -1,6 +1,6 @@
 <template>
   <div class="shopcart">
-    <div class="shop-left">
+    <div class="shop-left" @click="toggleFoodList">
       <span class="car-wrap">
         <!-- active控制购物车有商品是的样式 -->
         <i class="icon-car icon-shopping_cart" :class="{'active':totalNum>0}"></i>
@@ -9,7 +9,7 @@
       <span :class="[totalNum>0?'hasPrice':'','all-price']">￥{{totalPrice}}</span>
       <span class="patching-fee">另需配送费￥ {{deliveryPrice}}元</span>
     </div>
-    <div class="shop-right" :class="{'Settlement':payDes=='去结算'}">
+    <div class="shop-right" :class="{'Settlement':payDes=='去结算'}" @click="payFun">
       <span>{{payDes}}</span>
     </div>
     <div class="box-wrap">
@@ -22,26 +22,34 @@
         </div>
       </transition-group>
     </div>
-    <div class="select-list" >
-      <div class="list-header">
-        <h3 class="list-name">购物车</h3>
-        <span class="empty">清空</span>
+    <transition name="select-slide">
+      <div class="select-list" v-show="listShow">
+        <div class="list-header">
+          <h3 class="list-name">购物车</h3>
+          <span class="empty" @click="emptyFun">清空</span>
+        </div>
+        <div class="show-list-wrap" ref="showListWrap">
+          <ul class="food-list">
+            <li class="item" v-for="(food, index) in selectFoods" :key="index">
+              <div class="food-name">{{food.name}}</div>
+              <div class="single-price">${{food.price}}</div>
+              <div class="cart-control">
+                <Cartcontrol class="add-num" :food="food" ></Cartcontrol>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      <ul class="food-list">
-        <li class="item">
-          <div class="food-name">三大范大师教你付</div>
-          <div class="single-price">${{10}}</div>
-          <div class="cart-control">
-            <!-- <Cartcontrol class="add-num"></Cartcontrol> -->
-          </div>
-        </li>
-      </ul>
-    </div>
+    </transition>
+    <transition name="mask-animation">
+      <div class="mask" v-show="listShow" @click="closeFoodList"></div>
+    </transition>
   </div>
 </template>
 
 <script type='text/ecmascript-6'>
 import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
+import BScroll from "better-scroll";
   export default {
     props:{
       seller:{
@@ -77,7 +85,8 @@ import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
           {show:false},
           {show:false}
         ],
-        selecballs:[]
+        selecballs:[],
+        fold:true
       }
     },
     computed:{
@@ -104,6 +113,19 @@ import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
         }else{
           return '去结算'
         }
+      },
+      listShow(){
+        if(!this.totalNum){
+          this.fold=true;
+          return false
+        }
+        let show=!this.fold;
+        this.$nextTick(() => {
+          let showListWrap=new BScroll(this.$refs.showListWrap,{
+            click:true
+          })
+        })
+        return show
       }
     },
     methods:{
@@ -117,7 +139,27 @@ import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
             return;
           }
         }
-
+      },
+      toggleFoodList(){ //是否显示已选食物的LIST
+        if(!this.totalNum){
+          return
+        }
+        this.fold=!this.fold;
+      },
+      emptyFun(){
+        this.selectFoods.forEach((food) => {
+          food.count=0;
+        })
+      },
+      closeFoodList(){
+        this.fold=true;
+      },
+      payFun(){
+        if(this.payDes=="去结算"){
+          alert('去结算')
+        }else{
+          alert(this.payDes)
+        }
       },
       beforeEnter: function (el) {
         let len=this.balls.length;
@@ -277,12 +319,14 @@ import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
   }
   .select-list{
     position:absolute;
-    top:-611px;
+    top:0;
     left:0;
     width:100%;
-    height:611px;
+    // height:611px;
     background-color:#fff;
     z-index: -1;
+    transition: all .5s;
+    transform: translate3d(0, -100%, 0);
     .list-header{
       box-sizing: border-box;
       display: flex;
@@ -302,32 +346,77 @@ import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
         color:rgb(0, 160, 220)
       }
     }
-    .food-list{
-      padding: 0 36px;
-      .item{
-        display: flex;
-        height:96px;
-        align-items: center;
-        box-sizing: border-box;
-        .border-bottom-1px(rgba(7, 17, 27, 0.1));
-        .food-name{
-          width:458px;
-          font-size: 28px;
-          color: rgb(7, 17, 27);
-          line-height:48px
-        }
-        .single-price{
-          font-size:28px;
-          font-weight:700;
-          color:rgb(240, 20, 20);
-          line-height:48px;
-          margin-right:36px;
-        }
-        .cart-control{
-
+    .show-list-wrap{
+      max-height:434px;
+      padding-bottom:20px;
+      overflow:hidden;
+      .food-list{
+        padding: 0 36px;
+        .item{
+          display: flex;
+          height:96px;
+          align-items: center;
+          box-sizing: border-box;
+          .border-bottom-1px(rgba(7, 17, 27, 0.1));
+          .food-name{
+            width:458px;
+            font-size: 28px;
+            color: rgb(7, 17, 27);
+            line-height:48px
+          }
+          .single-price{
+            font-size:28px;
+            font-weight:700;
+            color:rgb(240, 20, 20);
+            line-height:48px;
+            margin-right:36px;
+          }
+          .cart-control{
+            width:180px;
+          }
         }
       }
     }
+
+  }
+  // .select-slide-enter-active{
+  //   transition: all .5s;
+  //   transform: translate3d(0, -100%, 0);
+  // }
+  // .select-slide-leave-active{
+  //   transition: all 0.5s;
+  //   //  transform: translate3d(0, -100%, 0);
+  // }
+  .select-slide-enter{
+    transform: translate3d(0, 0, 0);
+  }
+  .select-slide-leave-to{
+    transform: translate3d(0, 0, 0);
+  }
+  .mask{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color:rgba(7, 17, 27, 0.7);
+    filter: blur(10px);
+    opacity:1;
+    z-index: -20;
+  }
+  .mask-animation-enter-active{
+    transition: all 1s;
+  }
+  .mask-animation-leave-active{
+    transition: all 1s;
+  }
+  .mask-animation-enter{
+    opacity: 0;
+    background-color:rgba(7, 17, 27, 0);
+  }
+  .mask-animation-leave{
+    opacity: 0;
+    background-color:rgba(7, 17, 27, 0);
   }
 }
 

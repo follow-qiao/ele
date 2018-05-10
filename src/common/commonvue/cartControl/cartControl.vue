@@ -47,7 +47,6 @@
 @import "../../lesscss/style.less";
 .cart-control{
   font-size: 0;
-  line-height:48px;
   .num-mode-enter-active{
     transition: all 0.3s ease;
     i{
@@ -81,11 +80,13 @@
       font-size:48px;
       color: rgb(0, 160, 220);
       padding:4px;
+      line-height:48px;
     }
   }
   .num{
     width:48px;
     font-size:20px;
+    line-height:48px;
     display: inline-block;
     color: rgb(147, 153, 159);
     padding: 4px 0;
@@ -95,6 +96,7 @@
   .add{
     display: inline-block;
     font-size: 48px;
+    line-height:48px;
     color: rgb(0, 160, 220);
     padding:4px;
   }

@@ -40,11 +40,13 @@
       </ul>
     </div>
     <Shopcart v-if="seller" :deliveryPrice="(seller.deliveryPrice)*1" :minPrice="seller.minPrice" :selectFoods="selectFoods" ref="carDom"></Shopcart>
+    <!-- <Food-detail></Food-detail> -->
   </div>
 </template>
 <script type='text/ecmascript-6'>
   import BScroll from "better-scroll";
   import Shopcart from "components/shopcart/shopcart.vue";
+  import FoodDetail from "components/foodDetail/foodDetail.vue";
   import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
   let ERR_OK=0
   export default {
@@ -84,7 +86,8 @@
     },
     components:{
       Shopcart,
-      Cartcontrol
+      Cartcontrol,
+      FoodDetail
     },
     computed:{
       selecedIndex:function (){
