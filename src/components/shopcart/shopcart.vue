@@ -86,7 +86,8 @@ import BScroll from "better-scroll";
           {show:false}
         ],
         selecballs:[],
-        fold:true
+        fold:true,
+        scroll:''
       }
     },
     computed:{
@@ -121,9 +122,14 @@ import BScroll from "better-scroll";
         }
         let show=!this.fold;
         this.$nextTick(() => {
-          let showListWrap=new BScroll(this.$refs.showListWrap,{
-            click:true
-          })
+          if(!this.scroll){
+            this.scroll=new BScroll(this.$refs.showListWrap,{
+              click:true
+            })
+          }else{
+            this.scroll.refresh()
+          }
+
         })
         return show
       }
@@ -211,6 +217,7 @@ import BScroll from "better-scroll";
   left: 0;
   height:90px;
   width: 100%;
+  z-index:999;
   .shop-left{
     flex: 1;
     display:flex;

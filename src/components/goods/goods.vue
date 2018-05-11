@@ -15,7 +15,7 @@
         <li class="type-item" v-for="(item,index) in goods" :key="index">
           <h3 class="type-name">{{item.name}}</h3>
           <ul class="item-wrap">
-            <li class="type-info" v-for="(food,index) in item.foods" :key="index">
+            <li class="type-info" v-for="(food,index) in item.foods" :key="index" @click.stop="selectFood(food)">
               <div class="food-pic">
                 <img :src="food.image" alt="">
               </div>
@@ -40,7 +40,7 @@
       </ul>
     </div>
     <Shopcart v-if="seller" :deliveryPrice="(seller.deliveryPrice)*1" :minPrice="seller.minPrice" :selectFoods="selectFoods" ref="carDom"></Shopcart>
-    <!-- <Food-detail></Food-detail> -->
+    <Food-detail :food="singleFood" ref="singleFood" @adddom="addDom"></Food-detail>
   </div>
 </template>
 <script type='text/ecmascript-6'>
@@ -81,7 +81,8 @@
       return {
         goods:[],
         clientHeights:[],  //区间高度数组
-        scrollY:0
+        scrollY:0,
+        singleFood:null
       }
     },
     components:{
@@ -145,6 +146,11 @@
         this.$nextTick(() => {
           this.$refs.carDom._dropDown(el)
         })
+      },
+      selectFood(food){
+        console.log(food)
+        this.singleFood=food;
+        this.$refs.singleFood.show();
       }
     }
   }

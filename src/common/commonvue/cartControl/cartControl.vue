@@ -1,12 +1,12 @@
 <template>
   <div class="cart-control">
     <transition name="num-mode">
-      <div class="reduce" v-show="food.count" @click="reduceNum">
+      <div class="reduce" v-show="food.count" @click.stop.prevent="reduceNum">
         <i class="reduce icon-remove_circle_outline"></i>
       </div>
     </transition>
     <span class="num" v-show="food.count">{{food.count}}</span>
-    <i class="add icon-add_circle" @click="addFoodNum($event)"></i>
+    <i class="add icon-add_circle" @click.stop.prevent="addFoodNum($event)"></i>
   </div>
 </template>
 
@@ -25,13 +25,16 @@
     },
     methods:{
       addFoodNum(event){
+        console.log(event)
+        if(!event._constructed){  //防止Pc多次点击
+          return;
+        }
         if(!this.food.count){
           Vue.set(this.food,'count')
           this.food.count=1;
         }else{
           this.food.count++;
         }
-        console.log(event.target)
         this.$emit('adddom',event.target)
       },
       reduceNum(){
