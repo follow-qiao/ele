@@ -33,39 +33,28 @@
         </div>
         <div class="user-comment">
           <h3>商品评价</h3>
-          <ul class="rating-type">
-            <li>
-              <span class="type">全部</span><span class="rating-num">57</span>
-            </li>
-            <li>
-              <span class="type">推荐</span><span class="rating-num">47</span>
-            </li>
-            <li>
-              <span class="type">吐槽</span><span class="rating-num">10</span>
-            </li>
-          </ul>
-          <div class="filter-rating">
-            <i class="icon-check_circle"></i>
-            <span>只看有内容评价</span>
-          </div>
+          <RatingSelect :selectType="selectType" :ratings="food.ratings" :onlyContent="onlyContent" :des="des" @ratingType="ratingTypeFun"></RatingSelect>
         </div>
-        <ul class="rating-content">
-          <li class="item" v-for="(rate,index) in food.ratings" :key="index">
+        <ul class="rating-content" v-show="food.ratings.length">
+          <li class="item" v-for="(rate,index) in food.ratings" :key="index" v-show="isShow(rate.rateType,rate.text)">
             <div class="rating-info">
               <div class="time">
                 <span>{{rate.rateTime}}</span><span>12:34</span>
               </div>
               <div class="saller">
                 <span>{{rate.username}}</span>
-                <!-- <img :src="rate.avatar" alt=""> -->
+                <img :src="rate.avatar" alt="">
               </div>
             </div>
             <div class="desc-info">
-              <i class="icon-thumb_down"></i>
+              <i class="icon-thumb_down" :class="rate.rateType===1?'icon-thumb_down':'icon-thumb_up'"></i>
               <span>{{rate.text}}</span>
             </div>
           </li>
         </ul>
+        <div class="none-rating" v-show="!food.ratings.length">
+          暂无评价
+        </div>
       </div>
     </div>
   </transition>
@@ -74,8 +63,12 @@
 <script type='text/ecmascript-6'>
 import Vue from "vue";
 import BScroll from "better-scroll";
- import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
-  export default {
+import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
+import RatingSelect from "common/commonvue/ratingSelect/ratingSelect.vue"
+const POSITION=0;
+const NEGATIVE=1;
+const ALL=2;
+export default {
     props:{
       food:{
         type:Object
@@ -84,12 +77,26 @@ import BScroll from "better-scroll";
     data () {
       return {
         showFlag:false,
-        scroll:''
+        scroll:'',
+        ratings:[],
+        selectType:ALL,
+        onlyContent:false,
+        des:{
+          all:'全部',
+          psositive:'推荐',
+          negative:'吐槽'
+        },
       }
+    },
+    filters:{
+
     },
     methods:{
       show(){
         this.showFlag= true;
+        //ratingSelect组件会用到多处，所以要根据当前组件初始化一下
+        this.selectType=ALL;
+        this.onlyContent=false;
         this.$nextTick(() => {
           if(!this.scroll){
             this.scroll=new BScroll(this.$refs.scrollFood,{
@@ -116,10 +123,25 @@ import BScroll from "better-scroll";
       },
       goBack(){
         this.showFlag= false;
+      },
+      ratingTypeFun(num,flag){
+        this.selectType=num
+        this.onlyContent=flag
+      },
+      isShow(type,text){
+        if(this.onlyContent&&!text){
+          return false
+        }
+        if(this.selectType===ALL){
+          return true
+        }else{
+          return type==this.selectType
+        }
       }
     },
     components:{
-      Cartcontrol
+      Cartcontrol,
+      RatingSelect
     }
   }
 </script>
@@ -273,57 +295,10 @@ import BScroll from "better-scroll";
       color:rgb(7, 17, 27);
       margin-bottom:36px;
     }
-    .rating-type{
-      display: flex;
-      justify-content: flex-start;
-      padding-bottom: 36px;
-      .border-bottom-1px(rgba(7, 17, 27, 0.1));
-      li{
-        width:120px;
-        text-align: center;
-        padding:16px 0;
-        margin-right: 16px;
-        border-radius: 24px;
-        background-color: rgb(0, 160,220);
-        font-size: 0;
-        color:rgb(255, 255, 255);
-        .type{
-          display: inline-block;
-          font-size: 24px;
-          line-height: 32px;
-          margin-right:8px;
-        }
-        .rating-num{
-          display: inline-block;
-          font-size: 24px;
-          line-height: 32px;
-        }
-      }
-      &>li:nth-child(2){
-        color:rgb(77, 85, 93);
-        background-color: rgba(0, 160,220,0.2);
-      }
-      &>li:nth-child(3){
-        color:rgb(77, 85, 93);
-        background-color: rgba(77, 85, 93,0.2);
-      }
-    }
-    .filter-rating{
-      display: flex;
-      padding: 24px 0;
-      align-items: center;
-      color:rgb(147, 153, 159);
-      i{
-        font-size: 48px;
-        margin-right: 8px;
-      }
-      span{
-        font-size: 24px;
-      }
-    }
+
   }
   .rating-content{
-    padding:0 36px;
+    padding:0 36px 116px;
     background-color: #fff;
     .item{
       .border-bottom-1px(rgba(7, 17, 27, 0.1));
@@ -354,7 +329,8 @@ import BScroll from "better-scroll";
             width:24px;
             height:24px;
             border-radius: 50%;
-            background-color: red;
+            background-size: 24px 24px;
+            // background-color: red;
           }
         }
       }
@@ -375,6 +351,12 @@ import BScroll from "better-scroll";
         }
       }
     }
+  }
+  .none-rating{
+    padding:0 36px;
+    font-size: 28px;
+    line-height:28px;
+    color:rgb(147, 153, 159)
   }
 }
 </style>

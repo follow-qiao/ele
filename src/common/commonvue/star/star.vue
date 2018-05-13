@@ -56,9 +56,6 @@
   i{
     display: inline-block;
   }
-  &>i:last-child{
-    margin-right: 0;
-  }
   &.star-48{
     .star-item{
       width: 40px;
@@ -109,6 +106,9 @@
         .bg-image("star24_off")
       }
     }
+  }
+  &>i:last-child{
+    margin-right: 0!important;
   }
 }
 </style>

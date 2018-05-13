@@ -10,14 +10,14 @@
         <div class="serve">
           <span>服务态度</span>
           <span>
-            <Star></Star>
+            <Star :size="36" :store="4.2"></Star>
           </span>
           <span>4.0</span>
         </div>
         <div>
           <span>服务态度</span>
           <span>
-            <Star></Star>
+            <Star :size="36" :store="4.2"></Star>
           </span>
           <span>3.9</span>
         </div>
