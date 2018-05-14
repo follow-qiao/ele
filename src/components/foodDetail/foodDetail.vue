@@ -39,7 +39,7 @@
           <li class="item" v-for="(rate,index) in food.ratings" :key="index" v-show="isShow(rate.rateType,rate.text)">
             <div class="rating-info">
               <div class="time">
-                <span>{{rate.rateTime}}</span><span>12:34</span>
+                <span>{{rate.rateTime | formatDate}}</span>
               </div>
               <div class="saller">
                 <span>{{rate.username}}</span>
@@ -63,6 +63,7 @@
 <script type='text/ecmascript-6'>
 import Vue from "vue";
 import BScroll from "better-scroll";
+import {formatDate} from "common/js/date.js"
 import Cartcontrol from "common/commonvue/cartControl/cartControl.vue"
 import RatingSelect from "common/commonvue/ratingSelect/ratingSelect.vue"
 const POSITION=0;
@@ -89,7 +90,10 @@ export default {
       }
     },
     filters:{
-
+      formatDate(time){
+        let date=new Date(time)
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
+      }
     },
     methods:{
       show(){
@@ -343,6 +347,9 @@ export default {
           color:rgb(147, 153, 159);
           line-height: 48px;
           margin-right: 8px;
+        }
+        .icon-thumb_up{
+          color:#00a0dc;
         }
         span{
           font-size: 20px;

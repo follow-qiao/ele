@@ -1,84 +1,143 @@
 <template>
-  <div class="rating">
-    <div class="shop-score">
-      <div class="score">
-        <span>3.9</span>
-        <span>综合评分</span>
-        <span>高于周边商家69.2%</span>
+  <div class="rating-wrap" ref="ratingWrap">
+    <div class="rating">
+      <div class="shop-score">
+        <div class="score">
+          <span>{{seller.score}}</span>
+          <span>综合评分</span>
+          <span>高于周边商家{{seller.rankRate}}%</span>
+        </div>
+        <div class="sever-score">
+          <div class="serve">
+            <span class="serve-text">服务态度</span>
+            <span>
+              <Star :size="36" :store="seller.foodScore"></Star>
+            </span>
+            <span class="score-num">{{seller.foodScore}}</span>
+          </div>
+          <div class="serve">
+            <span class="serve-text">服务态度</span>
+            <span>
+              <Star :size="36" :store="seller.serviceScore"></Star>
+            </span>
+            <span class="score-num">{{seller.serviceScore}}</span>
+          </div>
+          <div class="serve">
+            <span class="serve-text">送达时间</span>
+            <span class="minute">{{seller.deliveryTime}}分钟</span>
+          </div>
+        </div>
       </div>
-      <div class="sever-score">
-        <div class="serve">
-          <span>服务态度</span>
-          <span>
-            <Star :size="36" :store="4.2"></Star>
-          </span>
-          <span>4.0</span>
-        </div>
-        <div>
-          <span>服务态度</span>
-          <span>
-            <Star :size="36" :store="4.2"></Star>
-          </span>
-          <span>3.9</span>
-        </div>
-        <div>
-          <span>送达时间</span>
-        </div>
+      <div class="user-comment">
+        <RatingSelect :selectType="selectType" :ratings="ratings" :onlyContent="onlyContent" :des="des" @ratingType="ratingTypeFun"></RatingSelect>
       </div>
-    </div>
-    <div class="user-comment">
-      <ul class="rating-type">
-        <li>
-          <span class="type">全部</span><span class="rating-num">57</span>
-        </li>
-        <li>
-          <span class="type">推荐</span><span class="rating-num">47</span>
-        </li>
-        <li>
-          <span class="type">吐槽</span><span class="rating-num">10</span>
+      <ul class="rating-content" v-show="ratings.length">
+        <li class="item" v-for="(item, index) in ratings" :key="index" v-show="isShow(item.rateType,item.text)">
+          <img class="user-pic" :src="item.avatar" alt="">
+          <div class="rating-content">
+            <div class="rating-info">
+              <div class="saller">
+                <span>{{item.username}}</span>
+              </div>
+              <div class="time">
+                <span>{{item.rateTime| formatDate}}</span>
+              </div>
+            </div>
+            <div class="rating-star">
+              <Star :size="36" :store="item.score"></star>
+              <span class="arrive-time">{{item.deliveryTime}}分钟</span>
+            </div>
+            <p class="food-des">{{item.text}}</p>
+            <div class="desc-info">
+              <i  :class="item.rateType===1?'icon-thumb_down':'icon-thumb_up'"></i>
+              <div class="food-detail">
+                <span v-for="(rete,index) in item.recommend" :key="index">{{rete}}</span>
+              </div>
+            </div>
+          </div>
         </li>
       </ul>
-      <div class="filter-rating">
-        <i class="icon-check_circle"></i>
-        <span>只看有内容评价</span>
-      </div>
     </div>
-    <ul class="rating-content">
-      <li class="item">
-        <div class="user-pic"></div>
-        <div class="rating-content">
-          <div class="rating-info">
-            <div class="saller">
-              <span>3********2</span>
-            </div>
-            <div class="time">
-              <span>2016-07-09</span><span>12:34</span>
-            </div>
-          </div>
-          <div class="desc-info">
-            <i class="icon-thumb_down"></i>
-            <div class="food-detail">
-              <span>大王香菇酱www</span>
-              <span>大王香菇酱ww</span>
-              <span>大王香菇酱w</span>
-              <span>大王香菇酱ww</span>
-            </div>
-          </div>
-        </div>
-      </li>
-    </ul>
   </div>
 </template>
 
 <script type='text/ecmascript-6'>
-  import Star from "../../common/commonvue/star/star.vue"
+  import Star from "common/commonvue/star/star.vue";
+  import BScroll from "better-scroll";
+  import {formatDate} from "common/js/date.js"
+  import RatingSelect from "common/commonvue/ratingSelect/ratingSelect.vue"
+  const ERR_OK=0;
+  const POSITION=0;
+  const NEGATIVE=1;
+  const ALL=2;
   export default {
+    created(){
+      this.$http.get('/api/ratings', {
+        params: {}
+      })
+      .then((response) => {
+        let dataList=response.data
+        if(ERR_OK===dataList.erro) {
+          this.ratings=dataList.data;
+          console.log(this.ratings)
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    },
+    mounted(){
+      if(!this.scroll){
+        this.scroll=new BScroll(this.$refs.ratingWrap,{
+          click:true
+        })
+      }else{
+        this.scroll.refresh()
+      }
+    },
+    props:{
+      seller:{
+        type:Object
+      }
+    },
     data () {
       return {
+        ratings:[],
+        selectType:ALL,
+        onlyContent:false,
+        des:{
+          all:'全部',
+          psositive:'推荐',
+          negative:'吐槽'
+        },
+        scroll:""
+      }
+    },
+    filters:{
+      formatDate(time){
+        let date=new Date(time)
+        return formatDate(date, 'yyyy-MM-dd hh:mm')
+      }
+    },
+    methods:{
+      ratingTypeFun(num,flag){
+        this.selectType=num
+        this.onlyContent=flag
+      },
+      isShow(type,text){
+        if(this.onlyContent&&!text){
+          return false
+        }
+        if(this.selectType===ALL){
+          return true
+        }else{
+          return type==this.selectType
+        }
       }
     },
     components:{
-      Star
+      Star,
+      RatingSelect
     }
   }
 </script>
@@ -86,17 +145,26 @@
 <style lang='less' scoped type='text/css'>
 @import "../../common/lesscss/mixin.less";
 @import "../../common/lesscss/style.less";
+.rating-wrap{
+  position:absolute;
+  top:354px;
+  left:0;
+  bottom:0;
+  width:100%;
+  overflow:hidden;
+}
 .rating{
   background-color:#f3f5f7;
   .shop-score{
     display:flex;
-    padding:36px 48px;
+    padding:36px 24px;
     background-color: #fff;
     .border-bottom-1px(rgba(7, 17, 27, 0.1));
     margin-bottom:36px;
     .score{
+      box-sizing: border-box;
       width:275px;
-      padding-right:48px;
+      padding-right:24px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -123,7 +191,29 @@
     }
     .sever-score{
       flex:1;
-      padding-left:48px;
+      .border-none();
+      .serve{
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+        padding-left:24px;
+        .serve-text{
+          color:rgb(7, 17, 27);
+          line-height: 32px;
+          margin-right:24px;
+        }
+        .score-num{
+          color:rgb(255, 153, 0);
+          line-height: 36px;
+          margin-left:24px;
+        }
+        .minute{
+          color:rgb(147, 153, 159)
+        }
+      }
+
     }
   }
   .user-comment{
@@ -137,54 +227,6 @@
       line-height: 28px;
       color:rgb(7, 17, 27);
       margin-bottom:36px;
-    }
-    .rating-type{
-      display: flex;
-      justify-content: flex-start;
-      padding-bottom: 36px;
-      .border-bottom-1px(rgba(7, 17, 27, 0.1));
-      li{
-        width:120px;
-        text-align: center;
-        padding:16px 0;
-        margin-right: 16px;
-        border-radius: 24px;
-        background-color: rgb(0, 160,220);
-        font-size: 0;
-        color:rgb(255, 255, 255);
-        .type{
-          display: inline-block;
-          font-size: 24px;
-          line-height: 32px;
-          margin-right:8px;
-        }
-        .rating-num{
-          display: inline-block;
-          font-size: 24px;
-          line-height: 32px;
-        }
-      }
-      &>li:nth-child(2){
-        color:rgb(77, 85, 93);
-        background-color: rgba(0, 160,220,0.2);
-      }
-      &>li:nth-child(3){
-        color:rgb(77, 85, 93);
-        background-color: rgba(77, 85, 93,0.2);
-      }
-    }
-    .filter-rating{
-      display: flex;
-      padding: 24px 0;
-      align-items: center;
-      color:rgb(147, 153, 159);
-      i{
-        font-size: 48px;
-        margin-right: 8px;
-      }
-      span{
-        font-size: 24px;
-      }
     }
   }
   .rating-content{
@@ -200,6 +242,7 @@
         border-radius: 50%;
         margin-right:24px;
         background-color: red;
+        background-size: 56px 56px;
       }
       .rating-content{
         flex:1;
@@ -226,6 +269,24 @@
             }
           }
         }
+        .rating-star{
+          display: flex;
+          align-items: center;
+          margin-bottom:12px;
+          .arrive-time{
+            margin-left:12px;
+            font-size: 20px;
+            font-weight: 200;
+            color:rgb(147, 153, 159);
+          }
+        }
+        .food-des{
+          font-size: 24px;
+          color:rgb(7, 17, 27);
+          line-height: 36px;
+          margin:0;
+          padding:0 0 16px;
+        }
         .desc-info{
           display: flex;
           i{
@@ -235,13 +296,16 @@
             line-height: 48px;
             margin-right: 8px;
           }
+          .icon-thumb_up{
+            color:#00a0dc;
+          }
           .food-detail{
             flex: 1;
             font-size: 0;
             span{
               display: inline-block;
               box-sizing: border-box;
-              width:146px;
+              max-width:146px;
               padding:0 6px;
               font-size: 12px;
               line-height: 32px;
